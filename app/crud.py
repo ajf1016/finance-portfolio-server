@@ -18,7 +18,6 @@ def verify_password(plain_password, hashed_password) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 # Create User
-#  Create User (Make sure this function exists!)
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -237,7 +236,52 @@ def get_stock_allocation(db: Session, username: str, period: str = "1M"):
 
 
 def get_fund_overlap(db: Session, username: str):
-    return db.query(models.FundOverlap).all()
+    """
+    Fetch mutual fund overlap data for a user.
+    """
+    user = db.query(models.User).filter(
+        models.User.username == username).first()
+    if not user:
+        return {"error": "User not found"}
+
+    # ✅ Fetch all investments for the user
+    investments = db.query(models.Investment).filter(
+        models.Investment.user_id == user.id).all()
+
+    if not investments:
+        return {"overlaps": []}
+
+    # ✅ Fetch fund overlap data
+    overlap_data = db.query(models.FundOverlap).all()
+
+    response_data = []
+
+    for overlap in overlap_data:
+        fund_1 = db.query(models.MutualFund).filter(
+            models.MutualFund.id == overlap.fund_id).first()
+        fund_2 = db.query(models.MutualFund).filter(
+            models.MutualFund.id == overlap.overlapping_fund_id).first()
+
+        if not fund_1 or not fund_2:
+            continue
+
+        # ✅ Fetch stocks common to both funds
+        fund_1_stocks = db.query(models.FundAllocation).filter(
+            models.FundAllocation.fund_id == fund_1.id).all()
+        fund_2_stocks = db.query(models.FundAllocation).filter(
+            models.FundAllocation.fund_id == fund_2.id).all()
+
+        common_stocks = list(set([s.sector for s in fund_1_stocks]) & set(
+            [s.sector for s in fund_2_stocks]))
+
+        response_data.append({
+            "fund_name": fund_1.name,
+            "overlapping_fund_name": fund_2.name,
+            "overlap_percentage": overlap.overlap_percentage,
+            "common_stocks": common_stocks
+        })
+
+    return {"overlaps": response_data}
 
 
 #  Get sector allocation

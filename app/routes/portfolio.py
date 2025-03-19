@@ -36,6 +36,9 @@ def get_stock_allocation(
 #  Get overlap analysis
 
 
-@router.get("/portfolio/overlap")
-def get_fund_overlap(db: Session = Depends(database.get_db), user: dict = Depends(get_current_user)):
+@router.get("/portfolio/overlap", response_model=schemas.FundOverlapResponse)
+def get_fund_overlap(
+    db: Session = Depends(database.get_db),
+    user: dict = Depends(get_current_user)
+):
     return crud.get_fund_overlap(db, user["username"])
