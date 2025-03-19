@@ -56,4 +56,4 @@ dmypy.json
 cython_debug/
 
 # FastAPI specific
-instance/
+instance/alembic.ini
