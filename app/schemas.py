@@ -103,7 +103,7 @@ class SectorAllocationResponse(BaseModel):
     allocations: List[SectorAllocationItem]
     total_investment: float
 
-# ✅ Schema for individual fund-stock overlap
+#  Schema for individual fund-stock overlap
 
 
 class FundOverlapItem(BaseModel):
@@ -112,7 +112,7 @@ class FundOverlapItem(BaseModel):
     overlap_percentage: float
     common_stocks: List[str]  # List of stock symbols
 
-# ✅ Response schema for `/api/portfolio/overlap`
+#  Response schema for `/api/portfolio/overlap`
 
 
 class FundOverlapResponse(BaseModel):

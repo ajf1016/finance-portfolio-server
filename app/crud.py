@@ -244,14 +244,14 @@ def get_fund_overlap(db: Session, username: str):
     if not user:
         return {"error": "User not found"}
 
-    # ✅ Fetch all investments for the user
+    #  Fetch all investments for the user
     investments = db.query(models.Investment).filter(
         models.Investment.user_id == user.id).all()
 
     if not investments:
         return {"overlaps": []}
 
-    # ✅ Fetch fund overlap data
+    #  Fetch fund overlap data
     overlap_data = db.query(models.FundOverlap).all()
 
     response_data = []
@@ -265,7 +265,7 @@ def get_fund_overlap(db: Session, username: str):
         if not fund_1 or not fund_2:
             continue
 
-        # ✅ Fetch stocks common to both funds
+        #  Fetch stocks common to both funds
         fund_1_stocks = db.query(models.FundAllocation).filter(
             models.FundAllocation.fund_id == fund_1.id).all()
         fund_2_stocks = db.query(models.FundAllocation).filter(
