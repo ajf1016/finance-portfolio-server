@@ -1,11 +1,22 @@
 from fastapi import FastAPI
 from app.routes import auth, fund, portfolio, investment, portfolio
+from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 
 # Initialize DB
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Portfolio Dashboard API")
+
+# ✅ Enable CORS (Fixes frontend communication issues)
+app.add_middleware(
+    CORSMiddleware,
+    # ✅ Replace with your frontend domain
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],  # ✅ Allow all HTTP methods (GET, POST, PUT, DELETE)
+    allow_headers=["*"],  # ✅ Allow all headers
+)
 
 # ✅ Register API Routes
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 from passlib.context import CryptContext
+from datetime import datetime, timedelta
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -35,31 +36,64 @@ def create_user(db: Session, user: schemas.UserCreate):
 def get_portfolio(db: Session, username: str):
     user = db.query(models.User).filter(
         models.User.username == username).first()
-
     if not user:
         return {"error": "User not found"}
 
     investments = db.query(models.Investment).filter(
         models.Investment.user_id == user.id).all()
 
-    if not investments:  # Handle case when user has no investments
+    if not investments:
         return {
             "initial_investment": 0,
             "current_value": 0,
-            "growth_percentage": 0  # No investments → No growth percentage
+            "growth_percentage": 0,
+            "one_day_return": 0,
+            "best_performing_scheme": None,
+            "best_performing_scheme_return": None,
+            "worst_performing_scheme": None,
+            "worst_performing_scheme_return": None
         }
 
+    # ✅ Total investment and current value
     total_investment = sum(inv.amount_invested for inv in investments)
     total_current_value = sum(
         inv.amount_invested * (1 + inv.returns_since_investment / 100) for inv in investments)
+    growth_percentage = ((total_current_value - total_investment) /
+                         total_investment) * 100 if total_investment else 0
 
-    growth_percentage = 0 if total_investment == 0 else (
-        (total_current_value - total_investment) / total_investment) * 100
+    # ✅ Find best and worst performing schemes
+    best_fund = max(
+        investments, key=lambda inv: inv.returns_since_investment, default=None)
+    worst_fund = min(
+        investments, key=lambda inv: inv.returns_since_investment, default=None)
+
+    best_scheme_name = best_fund.fund.name if best_fund else None
+    best_scheme_return = best_fund.returns_since_investment if best_fund else None
+
+    worst_scheme_name = worst_fund.fund.name if worst_fund else None
+    worst_scheme_return = worst_fund.returns_since_investment if worst_fund else None
+
+    # ✅ Calculate 1-Day Return
+    yesterday = datetime.now() - timedelta(days=1)
+    yesterday_investments = db.query(models.Investment).filter(
+        models.Investment.user_id == user.id, models.Investment.date <= yesterday.date()
+    ).all()
+
+    yesterday_value = sum(inv.amount_invested * (1 + inv.returns_since_investment / 100)
+                          for inv in yesterday_investments)
+    one_day_return = ((total_current_value - yesterday_value) /
+                      yesterday_value) * 100 if yesterday_value else 0
 
     return {
         "initial_investment": total_investment,
         "current_value": total_current_value,
-        "growth_percentage": growth_percentage  # Avoid division by zero
+        "growth_percentage": growth_percentage,
+        # ✅ Round to 2 decimal places
+        "one_day_return": round(one_day_return, 2),
+        "best_performing_scheme": best_scheme_name,
+        "best_performing_scheme_return": round(best_scheme_return, 2) if best_scheme_return is not None else None,
+        "worst_performing_scheme": worst_scheme_name,
+        "worst_performing_scheme_return": round(worst_scheme_return, 2) if worst_scheme_return is not None else None
     }
 
 
@@ -155,8 +189,56 @@ def get_sector_allocation(db: Session, username: str):
 # ✅ Get stock allocation
 
 
-def get_stock_allocation(db: Session, username: str):
-    return {"message": "Stock allocation API is pending implementation"}
+def get_stock_allocation(db: Session, username: str, period: str = "1M"):
+    """
+    Fetch investment value history and filter based on the selected time range.
+    """
+    user = db.query(models.User).filter(
+        models.User.username == username).first()
+    if not user:
+        return {"error": "User not found"}
+
+    # ✅ Define period ranges
+    period_map = {
+        "1M": timedelta(days=30),
+        "3M": timedelta(days=90),
+        "6M": timedelta(days=180),
+        "1Y": timedelta(days=365),
+        "3Y": timedelta(days=1095),
+        "MAX": timedelta(days=3650)  # Approx 10 years
+    }
+
+    # ✅ Get start date based on selected period
+    end_date = datetime.now().date()
+    start_date = end_date - \
+        period_map.get(period, timedelta(days=30))  # Default to 1M
+
+    # ✅ Fetch historical investments
+    history = db.query(models.Investment).filter(
+        models.Investment.user_id == user.id,
+        models.Investment.date >= start_date
+    ).order_by(models.Investment.date).all()
+
+    # ✅ Format data points for the graph
+    history_points = [
+        {"date": inv.date, "value": inv.amount_invested *
+            (1 + inv.returns_since_investment / 100)}
+        for inv in history
+    ]
+
+    # ✅ Calculate latest value and change percentage
+    latest_value = history_points[-1]["value"] if history_points else 0
+    initial_value = history_points[0]["value"] if history_points else 0
+    change_amount = latest_value - initial_value
+    change_percentage = (change_amount / initial_value *
+                         100) if initial_value else 0
+
+    return {
+        "history": history_points,
+        "total_value": latest_value,
+        "change_amount": change_amount,
+        "change_percentage": round(change_percentage, 2)
+    }
 
 # ✅ Get fund overlap analysis
 

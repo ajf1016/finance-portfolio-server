@@ -22,9 +22,13 @@ def get_sector_allocation(db: Session = Depends(database.get_db), user: dict = D
 # ✅ Get stock allocation
 
 
-@router.get("/portfolio/stock-allocation")
-def get_stock_allocation(db: Session = Depends(database.get_db), user: dict = Depends(get_current_user)):
-    return crud.get_stock_allocation(db, user["username"])
+@router.get("/portfolio/stock-allocation", response_model=schemas.StockAllocationResponse)
+def get_stock_allocation(
+    period: str = "1M",  # ✅ Accepts "1M", "3M", "6M", "1Y", "3Y", "MAX"
+    db: Session = Depends(database.get_db),
+    user: dict = Depends(get_current_user)
+):
+    return crud.get_stock_allocation(db, user["username"], period)
 
 # ✅ Get overlap analysis
 
