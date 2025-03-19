@@ -8,17 +8,17 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Portfolio Dashboard API")
 
-# ✅ Enable CORS (Fixes frontend communication issues)
+#  Enable CORS (Fixes frontend communication issues)
 app.add_middleware(
     CORSMiddleware,
-    # ✅ Replace with your frontend domain
+    #  Replace with your frontend domain
     allow_origins=["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],  # ✅ Allow all HTTP methods (GET, POST, PUT, DELETE)
-    allow_headers=["*"],  # ✅ Allow all headers
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE)
+    allow_headers=["*"],  # Allow all headers
 )
 
-# ✅ Register API Routes
+#  Register API Routes
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(portfolio.router, prefix="/api", tags=["Portfolio"])
 app.include_router(fund.router, prefix="/api", tags=["Mutual Funds"])

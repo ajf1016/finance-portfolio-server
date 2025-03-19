@@ -13,7 +13,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# ✅ OAuth2 scheme (for authentication)
+#  OAuth2 scheme (for authentication)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 

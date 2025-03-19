@@ -16,21 +16,21 @@ class UserCreate(UserBase):
 class UserResponse(UserBase):
     id: int
 
-# ✅ Schema for a single data point in the graph
+#  Schema for a single data point in the graph
 
 
 class InvestmentHistoryPoint(BaseModel):
     date: date
     value: float
 
-# ✅ Update `/api/portfolio/stock-allocation` response schema
+#  Update `/api/portfolio/stock-allocation` response schema
 
 
 class StockAllocationResponse(BaseModel):
-    history: List[InvestmentHistoryPoint]  # ✅ Historical investment values
-    total_value: float  # ✅ Latest investment value
-    change_amount: float  # ✅ Change in value over selected period
-    change_percentage: float  # ✅ Percentage change
+    history: List[InvestmentHistoryPoint]  # Historical investment values
+    total_value: float  # Latest investment value
+    change_amount: float  # Change in value over selected period
+    change_percentage: float  # Percentage change
 
 
 # Mutual Fund schema
@@ -86,8 +86,23 @@ class PortfolioOverview(BaseModel):
     initial_investment: float
     current_value: float
     growth_percentage: float
-    one_day_return: Optional[float]  # ✅ Add 1-Day Return Field
+    one_day_return: Optional[float]  # Add 1-Day Return Field
     best_performing_scheme: Optional[str]
-    best_performing_scheme_return: Optional[float]  # ✅ Add Best Fund %
+    best_performing_scheme_return: Optional[float]  # Add Best Fund %
     worst_performing_scheme: Optional[str]
-    worst_performing_scheme_return: Optional[float]   # ✅ New field
+    worst_performing_scheme_return: Optional[float]  # New field
+
+#  Schema for each sector allocation
+
+
+class SectorAllocationItem(BaseModel):
+    sector: str
+    invested_amount: float
+    percentage: float
+
+#  Response schema for `/api/portfolio/sector-allocation`
+
+
+class SectorAllocationResponse(BaseModel):
+    allocations: List[SectorAllocationItem]
+    total_investment: float
