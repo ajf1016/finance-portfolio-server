@@ -109,58 +109,64 @@ Use this token in the Authorization header for protected routes:
 
 Authorization: Bearer your_jwt_token
 
-🔗 API Endpoints
-User Authentication
-Method	Endpoint	Description
-POST	/auth/signup	Register a new user
-POST	/auth/login	Login and get JWT token
-Portfolio Overview
-Method	Endpoint	Description
-GET	/api/portfolio	Get portfolio overview
-GET	/api/portfolio/sector-allocation	Get sector allocation
-GET	/api/portfolio/stock-allocation?period=1M	Get stock allocation (1M, 3M, 6M, etc.)
-GET	/api/portfolio/overlap	Get overlap analysis of funds
-Mutual Funds
-Method	Endpoint	Description
-GET	/api/mutual-funds	Get all mutual funds
-GET	/api/mutual-funds/{fund_id}	Get fund details
-POST	/api/mutual-funds	Add a new mutual fund (Admin)
-PUT	/api/mutual-funds/{fund_id}	Update fund details (Admin)
-DELETE	/api/mutual-funds/{fund_id}	Delete a fund (Admin)
-Investments
-Method	Endpoint	Description
-POST	/api/investments	Add new investment
-GET	/api/investments	Get user investments
-🛠 Database Schema
+## 🔗 API Endpoints
+** User Authentication
+ - Method	Endpoint	Description
+ - POST	/auth/signup	Register a new user
+ - POST	/auth/login	Login and get JWT token
+** Portfolio Overview
+ - Method	Endpoint	Description
+ - GET	/api/portfolio	Get portfolio overview
+ - GET	/api/portfolio/sector-allocation	Get sector allocation
+ - GET	/api/portfolio/stock-allocation?period=1M	Get stock allocation (1M, 3M, 6M, etc.)
+ - GET	/api/portfolio/overlap	Get overlap analysis of funds
+** Mutual Funds
+ - Method	Endpoint	Description
+ - GET	/api/mutual-funds	Get all mutual funds
+ - GET	/api/mutual-funds/{fund_id}	Get fund details
+ - POST	/api/mutual-funds	Add a new mutual fund (Admin)
+ - PUT	/api/mutual-funds/{fund_id}	Update fund details (Admin)
+ - DELETE	/api/mutual-funds/{fund_id}	Delete a fund (Admin)
+** Investments
+ - Method	Endpoint	Description
+ - POST	/api/investments	Add new investment
+ - GET	/api/investments	Get user investments
+
+## 🛠 Database Schema
 
 The PostgreSQL database schema includes:
 🔹 Users Table
-Column	Type	Description
+```Column	Type	Description
 id	INTEGER	Primary key
 username	TEXT	Unique username
 hashed_password	TEXT	Encrypted password
+```
 🔹 Mutual Funds Table
-Column	Type	Description
+```Column	Type	Description
 id	INTEGER	Primary key
 name	TEXT	Mutual fund name
 isin	TEXT	Unique fund identifier
+```
 🔹 Investments Table
-Column	Type	Description
+```Column	Type	Description
 id	INTEGER	Primary key
 user_id	INTEGER	Foreign key (Users)
 fund_id	INTEGER	Foreign key (Mutual Funds)
 date	DATE	Investment date
 amount_invested	FLOAT	Amount invested
 returns_since_investment	FLOAT	% returns
+```
 🔹 Fund Allocations Table
-Column	Type	Description
+```Column	Type	Description
 id	INTEGER	Primary key
 fund_id	INTEGER	Foreign key (Mutual Funds)
 sector	TEXT	Sector type
 percentage	FLOAT	Allocation %
+```
 🔹 Fund Overlaps Table
-Column	Type	Description
+```Column	Type	Description
 id	INTEGER	Primary key
 fund_id	INTEGER	Foreign key (Mutual Funds)
 overlapping_fund_id	INTEGER	Foreign key (Mutual Funds)
 overlap_percentage	FLOAT	Overlap %
+```
