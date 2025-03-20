@@ -14,8 +14,7 @@ app = FastAPI(title="Portfolio Dashboard API")
 app.add_middleware(
     CORSMiddleware,
     #  Replace with your frontend domain
-    allow_origins=["http://localhost:3000",
-                   "https://finance-portfolio-server.onrender.com"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE)
     allow_headers=["*"],  # Allow all headers

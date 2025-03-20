@@ -9,7 +9,8 @@ load_dotenv()
 LIVE_DATABASE_URL = os.getenv(
     "LIVE_DATABASE_URL")
 
-engine = create_engine(LIVE_DATABASE_URL)
+engine = create_engine(LIVE_DATABASE_URL, connect_args={"sslmode": "require"}
+                       )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
