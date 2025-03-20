@@ -45,65 +45,79 @@ The backend is built with **FastAPI**, using **PostgreSQL** as the database, and
 git clone https://github.com/yourusername/portfolio-dashboard-backend.git
 cd portfolio-dashboard-backend
 ```
-2️⃣ Create & Activate Virtual Environment
+## 2️⃣ Create & Activate Virtual Environment
 
-python -m venv venv
+```python -m venv venv
 source venv/bin/activate  # For Mac/Linux
 venv\Scripts\activate  # For Windows
+```
 
-3️⃣ Install Dependencies
+## 3️⃣ Install Dependencies
 
+```
 pip install -r requirements.txt
+```
 
-4️⃣ Set Up PostgreSQL Database
-
-    Install PostgreSQL if not already installed.
-    Create a new database:
-
+## 4️⃣ Set Up PostgreSQL Database
+Install PostgreSQL if not already installed.
+```
+Create a new database:
 CREATE DATABASE portfolio_db;
+```
 
-    Update .env file with DB credentials:
+Update .env file with DB credentials:
 
+```
 DATABASE_URL=postgresql://username:password@localhost/portfolio_db
 SECRET_KEY=supersecretkey
+```
 
-5️⃣ Run Database Migrations
+## 5️⃣ Run Database Migrations
 
+```
 alembic upgrade head
+```
 
-6️⃣ Start FastAPI Server
+## 6️⃣ Start FastAPI Server
 
+```
 uvicorn app.main:app --reload
+```
 
-🚀 API is now running at http://localhost:8000/docs
-🔐 Authentication & Authorization
+** 🔐 Authentication & Authorization
 
-This API uses JWT-based authentication.
-1️⃣ User Signup
+ - This API uses JWT-based authentication.
+## 1️⃣ User Signup
 
 Endpoint: POST /auth/signup
 Body:
 
+```
 {
     "username": "testuser",
     "password": "securepassword"
 }
+```
 
-2️⃣ User Login
+## 2️⃣ User Login
 
 Endpoint: POST /auth/login
 Body:
 
+```
 {
     "username": "testuser",
     "password": "securepassword"
 }
+```
 
 Response:
 
+```
 {
     "access_token": "your_jwt_token"
 }
+```
 
 Use this token in the Authorization header for protected routes:
 
